@@ -1,0 +1,19 @@
+{
+
+  "version": 2,
+
+  "name": "Back_Express",
+
+  "builds": [
+
+    { "src": "src/index.ts", "use": "@vercel/node" }
+
+  ],
+
+  "routes": [
+
+    { "src": "/(.*)", "dest": "src/index.ts" }
+
+  ]
+
+}
