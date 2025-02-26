@@ -9,10 +9,13 @@ const addresses = [{id: 1, value: 'Nezalegnai',}, {id: 2, title: 'Mostovai'}]
 app.use(express.json());
 
 app.get('/', (req: Request, res: Response) => {
-    res.send('Hi lo')
+    res.send('This is back on Express')
 })
 app.get('/products', (req: Request, res: Response) => {
     res.send(products)
+})
+app.get('/products/:id', (req: Request, res: Response) => {
+    res.send(products.filter(p=>p.id === +req.params.id))
 })
 app.get('/products', (req: Request, res: Response) => {
     if (req.query.title) {
