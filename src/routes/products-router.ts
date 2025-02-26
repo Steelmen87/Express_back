@@ -1,57 +1,37 @@
 import {Request, Response, Router} from "express";
+import {productsRepository} from "../repositories/addresses-repository";
 
-const products = [{id: 1, title: 'tomato',}, {id: 2, title: 'orange'}]
 
-export const productsRoute = Router({
-
-})
+export const productsRoute = Router({})
 
 productsRoute.get('/', (req: Request, res: Response) => {
-    res.send(products)
-})
-productsRoute.get('/:id', (req: Request, res: Response) => {
-    res.send(products.filter(p => p.id === +req.params.id))
-})
-productsRoute.get('/', (req: Request, res: Response) => {
-    if (req.query.title) {
-        let queryParams = req.query.title.toString()
-        res.send(products.filter(p => p.title.indexOf(queryParams) > -1))
-    } else {
-        res.send(404)
-    }
-
-})
-productsRoute.put('/:id', (req: Request, res: Response) => {
-    const product = products.find(a => a.id === +req.params.id)
-    if (product) {
-        product.title = req.body.title
-        res.status(201).send(product)
-    } else {
-        res.send(404)
-    }
-
-})
-productsRoute.delete('/:id', (req: Request, res: Response) => {
-    for (let i = 0; i < products.length; i++) {
-        if (products.find(p => p.id === +req.params.id)) {
-            products.splice(i, 1)
-            res.send(204)
-            return
-        }
-    }
-    res.send(404)
-
+    const foundProduct = productsRepository.findProducts(req.query.title?.toString())
+    res.send(foundProduct)
 })
 productsRoute.post('/', (req: Request, res: Response) => {
-    const newProduct = {id: Math.floor(Math.random() * 1000), title: req.body.title}
-    products.push(newProduct)
+    const newProduct = productsRepository.createProduct(req.body.title)
     res.status(201).send(newProduct)
 })
-productsRoute.get('/:productTitle', (req: Request, res: Response) => {
-    let product = products.find(p => p.title === req.params.productTitle)
-    if (product) {
-        res.send(products)
+productsRoute.put('/:id', (req: Request, res: Response) => {
+    const updateProduct = productsRepository.updateProduct(+req.params.id, req.body.title)
+    if(updateProduct){
+        res.send(productsRepository.findProductByID(+req.params.id))
+    }else{
+        res.send(404)
+    }
+})
+productsRoute.delete('/:id', (req: Request, res: Response) => {
+    const result = productsRepository.deleteProduct(+req.params.id)
+    if (result) {
+        res.send(204)
     } else {
         res.send(404)
     }
 })
+productsRoute.get('/:id', (req: Request, res: Response) => {
+    res.send(productsRepository.findProductByID(+req.params.id))
+})
+productsRoute.get('/', (req: Request, res: Response) => {
+    res.send(productsRepository.showProducts())
+})
+
