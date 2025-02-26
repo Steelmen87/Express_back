@@ -5,6 +5,5 @@ export const addressRepository = {
     },
     getAddressById(id:number){
         return addresses.find(a => a.id === id)
-
     }
 }
