@@ -10,57 +10,54 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.productsRepository = void 0;
-const products = [{ id: 1, title: 'tomato', }, { id: 2, title: 'orange' }];
+const db_1 = require("./db");
 exports.productsRepository = {
     showProducts() {
         return __awaiter(this, void 0, void 0, function* () {
-            return products;
+            return db_1.collectionFromShop.find({}).toArray();
         });
     },
     findProductByID(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return products.filter(p => p.id === id);
+            const product = yield db_1.collectionFromShop.findOne({ id });
+            if (product) {
+                return product;
+            }
+            else {
+                return null;
+            }
         });
     },
     findProducts(title) {
         return __awaiter(this, void 0, void 0, function* () {
             if (title) {
-                return products.filter(p => p.title.indexOf(title) > -1);
+                return db_1.collectionFromShop.find({ title: { $regex: title } }).toArray();
             }
             else {
-                return products;
+                return db_1.collectionFromShop.find({}).toArray();
             }
         });
     },
     createProduct(title) {
         return __awaiter(this, void 0, void 0, function* () {
-            const newProduct = { id: Math.floor(Math.random() * 1000), title };
-            products.push(newProduct);
+            const newProduct = {
+                id: Math.floor(Math.random() * 1000),
+                title
+            };
+            yield db_1.collectionFromShop.insertOne(newProduct);
             return newProduct;
         });
     },
     updateProduct(id, title) {
         return __awaiter(this, void 0, void 0, function* () {
-            const product = products.find(a => a.id === id);
-            if (product) {
-                product.title = title;
-                return true;
-            }
-            else {
-                return false;
-            }
+            const result = yield db_1.collectionFromShop.updateOne({ id }, { $set: { title } });
+            return result.matchedCount === 1;
         });
     },
     deleteProduct(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            for (let i = 0; i < products.length; i++) {
-                if (products.find(p => p.id === id)) {
-                    const index = products.findIndex(p => p.id === id);
-                    products.splice(index, 1);
-                    return true;
-                }
-            }
-            return false;
+            const result = yield db_1.collectionFromShop.deleteOne({ id });
+            return result.deletedCount === 1;
         });
     },
 };

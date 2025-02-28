@@ -1,37 +1,42 @@
 import {Request, Response, Router} from "express";
-import {productsRepository} from "../repositories/products-repository";
+import {productsRepository} from "../repositories/products-db-repository";
+import {inputValidationMiddleware, titleValidation} from "../middleware/middleware";
 
 
 export const productsRoute = Router({})
 
-productsRoute.get('/', (req: Request, res: Response) => {
-    const foundProduct = productsRepository.findProducts(req.query.title?.toString())
+
+productsRoute.get('/', async (req: Request, res: Response) => {
+    const foundProduct = await productsRepository.findProducts(req.query.title?.toString())
     res.send(foundProduct)
 })
-productsRoute.post('/', (req: Request, res: Response) => {
-    const newProduct = productsRepository.createProduct(req.body.title)
+// @ts-ignore
+productsRoute.post('/', titleValidation, inputValidationMiddleware, async (req: Request, res: Response) => {
+    const newProduct = await productsRepository.createProduct(req.body.title)
     res.status(201).send(newProduct)
 })
-productsRoute.put('/:id', (req: Request, res: Response) => {
-    const updateProduct = productsRepository.updateProduct(+req.params.id, req.body.title)
-    if(updateProduct){
+productsRoute.put('/:id', async (req: Request, res: Response) => {
+    const updateProduct = await productsRepository.updateProduct(+req.params.id, req.body.title)
+    if (updateProduct) {
         res.send(productsRepository.findProductByID(+req.params.id))
-    }else{
+    } else {
         res.send(404)
     }
 })
-productsRoute.delete('/:id', (req: Request, res: Response) => {
-    const result = productsRepository.deleteProduct(+req.params.id)
+productsRoute.delete('/:id', async (req: Request, res: Response) => {
+    const result = await productsRepository.deleteProduct(+req.params.id)
     if (result) {
         res.send(204)
     } else {
         res.send(404)
     }
 })
-productsRoute.get('/:id', (req: Request, res: Response) => {
-    res.send(productsRepository.findProductByID(+req.params.id))
+productsRoute.get('/:id', async (req: Request, res: Response) => {
+    const response = await productsRepository.findProductByID(+req.params.id)
+    res.send(response)
 })
-productsRoute.get('/', (req: Request, res: Response) => {
-    res.send(productsRepository.showProducts())
+productsRoute.get('/', async (req: Request, res: Response) => {
+    const response = await productsRepository.showProducts()
+    res.send(response)
 })
 
