@@ -9,50 +9,42 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.productsRepository = void 0;
-const db_1 = require("./db");
-exports.productsRepository = {
+exports.productsService = void 0;
+const products_db_repository_1 = require("../repositories/products-db-repository");
+exports.productsService = {
     showProducts() {
         return __awaiter(this, void 0, void 0, function* () {
-            return db_1.collectionFromShop.find({}).toArray();
+            return products_db_repository_1.productsRepository.showProducts();
         });
     },
     findProductByID(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const product = yield db_1.collectionFromShop.findOne({ id });
-            if (product) {
-                return product;
-            }
-            else {
-                return null;
-            }
+            return products_db_repository_1.productsRepository.findProductByID(id);
         });
     },
     findProducts(title) {
         return __awaiter(this, void 0, void 0, function* () {
-            const filter = {};
-            if (title) {
-                filter.title = { $regex: title };
-            }
-            return db_1.collectionFromShop.find(filter).toArray();
+            return products_db_repository_1.productsRepository.findProducts(title);
         });
     },
-    createProduct(newProduct) {
+    createProduct(title) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield db_1.collectionFromShop.insertOne(newProduct);
+            const newProduct = {
+                id: Math.floor(Math.random() * 1000),
+                title
+            };
+            yield products_db_repository_1.productsRepository.createProduct(newProduct);
             return newProduct;
         });
     },
     updateProduct(id, title) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.collectionFromShop.updateOne({ id }, { $set: { title } });
-            return result.matchedCount === 1;
+            return products_db_repository_1.productsRepository.updateProduct(id, title);
         });
     },
     deleteProduct(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.collectionFromShop.deleteOne({ id });
-            return result.deletedCount === 1;
+            return products_db_repository_1.productsRepository.deleteProduct(id);
         });
     },
 };

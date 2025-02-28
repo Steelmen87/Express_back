@@ -13,17 +13,14 @@ export const productsRepository = {
         }
     },
     async findProducts(title: string | null | undefined): Promise<ProductsType[]> {
+        const filter: any = {}
         if (title) {
-            return collectionFromShop.find({title: {$regex: title}}).toArray()
-        } else {
-            return collectionFromShop.find({}).toArray()
+            filter.title = {$regex: title}
         }
+        return collectionFromShop.find(filter).toArray()
+
     },
-    async createProduct(title: string): Promise<ProductsType> {
-        const newProduct = {
-            id: Math.floor(Math.random() * 1000),
-            title
-        }
+    async createProduct(newProduct: ProductsType): Promise<ProductsType> {
         await collectionFromShop.insertOne(newProduct)
         return newProduct
     },

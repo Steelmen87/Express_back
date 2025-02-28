@@ -9,17 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.productsRepository = void 0;
-const db_1 = require("./db");
-exports.productsRepository = {
+exports.productsServise = void 0;
+exports.productsServise = {
     showProducts() {
         return __awaiter(this, void 0, void 0, function* () {
-            return db_1.collectionFromShop.find({}).toArray();
+            return collectionFromShop.find({}).toArray();
         });
     },
     findProductByID(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const product = yield db_1.collectionFromShop.findOne({ id });
+            const product = yield collectionFromShop.findOne({ id });
             if (product) {
                 return product;
             }
@@ -34,24 +33,28 @@ exports.productsRepository = {
             if (title) {
                 filter.title = { $regex: title };
             }
-            return db_1.collectionFromShop.find(filter).toArray();
+            return collectionFromShop.find(filter).toArray();
         });
     },
-    createProduct(newProduct) {
+    createProduct(title) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield db_1.collectionFromShop.insertOne(newProduct);
+            const newProduct = {
+                id: Math.floor(Math.random() * 1000),
+                title
+            };
+            yield collectionFromShop.insertOne(newProduct);
             return newProduct;
         });
     },
     updateProduct(id, title) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.collectionFromShop.updateOne({ id }, { $set: { title } });
+            const result = yield collectionFromShop.updateOne({ id }, { $set: { title } });
             return result.matchedCount === 1;
         });
     },
     deleteProduct(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.collectionFromShop.deleteOne({ id });
+            const result = yield collectionFromShop.deleteOne({ id });
             return result.deletedCount === 1;
         });
     },
